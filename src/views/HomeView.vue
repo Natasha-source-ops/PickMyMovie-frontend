@@ -11,7 +11,7 @@ import MovieList from '@/components/MovieList.vue'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const response = await fetch(`${apiBaseUrl}/movies`)
+const response = await fetch(`${apiBaseUrl}`)
 const movies = await response.json()
 </script>
 
