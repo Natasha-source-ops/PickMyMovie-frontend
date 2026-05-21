@@ -7,12 +7,16 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted } from 'vue'
 import MovieList from '@/components/MovieList.vue'
 
+const movies = ref([])
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const response = await fetch(`${apiBaseUrl}`)
-const movies = await response.json()
+onMounted(async () => {
+  const response = await fetch(apiBaseUrl)
+  movies.value = await response.json()
+})
 </script>
 
 <style scoped>
