@@ -11,11 +11,20 @@ import { ref, onMounted } from 'vue'
 import MovieList from '@/components/MovieList.vue'
 
 const movies = ref([])
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string
 
 onMounted(async () => {
   const response = await fetch(apiBaseUrl)
-  movies.value = await response.json()
+  const data = await response.json()
+
+  movies.value = data.map((movie: any) => ({
+    id: movie.id,
+    title: movie.title,
+    description: movie.overview,
+    releaseDate: movie.release_date,
+    imageUrl: `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+  }))
 })
 </script>
 

@@ -13,7 +13,7 @@ defineProps({ movies: Array<Movie> })
 <template>
   <div class="movie-grid">
     <div v-for="movie in movies" :key="movie.id" class="movie-card">
-      <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" :alt="movie.title" />
+      <img :src="movie.imageUrl" :alt="movie.title" />
       <h3>{{ movie.title }}</h3>
       <p>{{ movie.releaseDate }}</p>
       <p>{{ movie.description }}</p>
