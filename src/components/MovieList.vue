@@ -15,8 +15,25 @@ defineProps<{
 
 const selectedMovieId = ref<number | null>(null)
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string
+
 function toggleMovie(movieId: number) {
   selectedMovieId.value = selectedMovieId.value === movieId ? null : movieId
+}
+
+async function addToWatchlist(movie: Movie) {
+  await fetch(`${apiBaseUrl}/watchlist`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      userId: 1,
+      movieId: movie.id
+    })
+  })
+
+  alert(`${movie.title} added to watchlist`)
 }
 </script>
 
@@ -35,6 +52,10 @@ function toggleMovie(movieId: number) {
         <h3>{{ movie.title }}</h3>
         <p class="release-date">{{ movie.releaseDate }}</p>
         <p class="description">{{ movie.description }}</p>
+
+        <button class="watchlist-button" @click.stop="addToWatchlist(movie)">
+          Add to Watchlist
+        </button>
       </div>
     </div>
   </div>
@@ -113,5 +134,20 @@ h3 {
   color: #d1d5db;
   margin: 0;
   line-height: 1.5;
+}
+
+.watchlist-button {
+  margin-top: 14px;
+  border: none;
+  border-radius: 20px;
+  background: #facc15;
+  color: #1c1308;
+  font-weight: 800;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.watchlist-button:hover {
+  background: #e0a93b;
 }
 </style>
