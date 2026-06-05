@@ -42,7 +42,9 @@ const movies = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 function scrollToMovies() {
   document.getElementById('movies')?.scrollIntoView({ behavior: 'smooth' })

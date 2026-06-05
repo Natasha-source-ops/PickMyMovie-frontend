@@ -15,7 +15,9 @@ defineProps<{
 
 const selectedMovieId = ref<number | null>(null)
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 function toggleMovie(movieId: number) {
   selectedMovieId.value = selectedMovieId.value === movieId ? null : movieId
