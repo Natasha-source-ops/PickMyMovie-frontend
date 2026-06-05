@@ -4,7 +4,7 @@
       <div class="hero-text">
         <p class="tagline">PickMyMovie</p>
 
-        <h1>Find your next favorite film.</h1>
+        <h1>Find your next movie to watch.</h1>
 
         <p class="description">
           Discover movie recommendations based on genres and streaming platforms.
@@ -13,11 +13,11 @@
 
         <div class="button-row">
           <button class="primary-button" @click="scrollToMovies">
-            Filme entdecken
+            Discover movies
           </button>
 
           <RouterLink to="/login" class="secondary-button">
-            Einloggen
+            Log in
           </RouterLink>
         </div>
       </div>
