@@ -50,7 +50,7 @@ function scrollToMovies() {
 
 onMounted(async () => {
   try {
-    const response = await fetch(apiBaseUrl)
+    const response = await fetch(`${apiBaseUrl}/api/v1/movies`)
 
     if (!response.ok) {
       throw new Error('Movies could not be loaded.')
