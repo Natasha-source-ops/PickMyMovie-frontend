@@ -31,7 +31,9 @@ async function addToWatchlist(movie: Movie) {
     },
     body: JSON.stringify({
       userId: 1,
-      movieId: movie.id
+      movieId: movie.id,
+      movieTitle: movie.title,
+      posterUrl: movie.imageUrl
     })
   })
 

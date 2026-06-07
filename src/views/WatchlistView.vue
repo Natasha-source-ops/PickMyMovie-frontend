@@ -5,6 +5,8 @@ interface WatchlistEntry {
   id: number
   userId: number
   movieId: number
+  movieTitle: string
+  posterUrl: string
   addedDate: string
 }
 
@@ -36,9 +38,18 @@ onMounted(async () => {
 
     <div v-else class="watchlist-grid">
       <div v-for="entry in watchlist" :key="entry.id" class="watchlist-card">
-        <h3>Movie ID: {{ entry.movieId }}</h3>
-        <p>User ID: {{ entry.userId }}</p>
-        <p>Added: {{ entry.addedDate }}</p>
+        <img
+          v-if="entry.posterUrl"
+          :src="entry.posterUrl"
+          :alt="entry.movieTitle"
+          class="poster"
+        />
+
+        <div>
+          <h3>{{ entry.movieTitle || 'Movie ID: ' + entry.movieId }}</h3>
+          <p>User ID: {{ entry.userId }}</p>
+          <p>Added: {{ entry.addedDate }}</p>
+        </div>
       </div>
     </div>
   </main>
@@ -70,10 +81,16 @@ h1 {
 }
 
 .watchlist-card {
-  background: #111827;
-  border: 1px solid rgba(250, 204, 21, 0.3);
-  border-radius: 16px;
-  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.poster {
+  width: 90px;
+  height: 135px;
+  object-fit: cover;
+  border-radius: 12px;
 }
 
 h3 {
