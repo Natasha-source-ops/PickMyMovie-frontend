@@ -19,6 +19,10 @@
           <RouterLink to="/login" class="secondary-button">
             Log in
           </RouterLink>
+
+          <RouterLink to="/watchlist" class="secondary-button">
+            Watchlist
+          </RouterLink>
         </div>
       </div>
     </section>
