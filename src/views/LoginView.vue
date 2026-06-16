@@ -63,7 +63,7 @@
           <form @submit.prevent="handleLogin">
             <h1>Sign In</h1>
 
-            <input v-model="loginEmail" type="email" placeholder="Email" />
+            <input v-model="loginUsername" type="text" placeholder="Username" />
 
             <div class="password-field">
               <input
@@ -112,12 +112,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+
+interface User {
+  id: number
+  username: string
+  email: string
+  password?: string
+}
+
+const router = useRouter()
+
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 const isRegisterActive = ref(false)
 const isScattered = ref(false)
 
-const loginEmail = ref('')
+const loginUsername = ref('')
 const loginPassword = ref('')
 
 const registerName = ref('')
@@ -128,17 +141,21 @@ const passwordVisible = ref(false)
 const passwordFocused = ref(false)
 const passwordWrong = ref(false)
 
+const message = ref('')
+
 function scatterCharacters() {
   isScattered.value = true
 }
 
 function showSignIn() {
   isRegisterActive.value = false
+  message.value = ''
   scatterCharacters()
 }
 
 function showSignUp() {
   isRegisterActive.value = true
+  message.value = ''
   scatterCharacters()
 }
 
@@ -147,18 +164,74 @@ function togglePassword() {
   isScattered.value = passwordVisible.value
 }
 
-function handleLogin() {
+async function handleRegister() {
+  message.value = ''
+
+  const response = await fetch(`${apiBaseUrl}/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: registerName.value,
+      email: registerEmail.value,
+      password: registerPassword.value
+    })
+  })
+
+  if (!response.ok) {
+    message.value = 'Registration failed.'
+    return
+  }
+
+  message.value = 'Account created. You can now sign in.'
+  isRegisterActive.value = false
+
+  loginUsername.value = registerName.value
+  loginPassword.value = ''
+}
+
+async function handleLogin() {
+  message.value = ''
+
+  const response = await fetch(`${apiBaseUrl}/users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: loginUsername.value,
+      password: loginPassword.value
+    })
+  })
+
+  if (!response.ok) {
+    showWrongPasswordAnimation()
+    message.value = 'Login failed.'
+    return
+  }
+
+  const user = (await response.json()) as User | null
+
+  if (!user || !user.id) {
+    showWrongPasswordAnimation()
+    message.value = 'Username or password is incorrect.'
+    return
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user))
+  localStorage.setItem('currentUserId', String(user.id))
+
+  message.value = 'Login successful.'
+  await router.push('/')
+}
+
+function showWrongPasswordAnimation() {
   passwordWrong.value = true
 
   setTimeout(() => {
     passwordWrong.value = false
   }, 1200)
-
-  console.log('Login:', loginEmail.value)
-}
-
-function handleRegister() {
-  console.log('Register:', registerName.value, registerEmail.value)
 }
 </script>
 
