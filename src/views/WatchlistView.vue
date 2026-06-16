@@ -17,11 +17,21 @@ const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ||
   'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
-onMounted(async () => {
+async function loadWatchlist() {
   const response = await fetch(`${apiBaseUrl}/watchlist/1`)
   watchlist.value = await response.json()
   isLoading.value = false
-})
+}
+
+async function removeFromWatchlist(id: number) {
+  await fetch(`${apiBaseUrl}/watchlist/${id}`, {
+    method: 'DELETE',
+  })
+
+  watchlist.value = watchlist.value.filter((entry) => entry.id !== id)
+}
+
+onMounted(loadWatchlist)
 </script>
 
 <template>
@@ -45,10 +55,14 @@ onMounted(async () => {
           class="poster"
         />
 
-        <div>
+        <div class="watchlist-content">
           <h3>{{ entry.movieTitle || 'Movie ID: ' + entry.movieId }}</h3>
           <p>User ID: {{ entry.userId }}</p>
           <p>Added: {{ entry.addedDate }}</p>
+
+          <button class="remove-button" @click="removeFromWatchlist(entry.id)">
+            Remove
+          </button>
         </div>
       </div>
     </div>
@@ -84,6 +98,10 @@ h1 {
   display: flex;
   gap: 20px;
   align-items: center;
+  background: #111827;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 16px;
+  padding: 20px;
 }
 
 .poster {
@@ -93,7 +111,35 @@ h1 {
   border-radius: 12px;
 }
 
+.watchlist-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 h3 {
   color: #facc15;
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0 0 6px;
+}
+
+.remove-button {
+  margin-top: 10px;
+  width: fit-content;
+  border: 1px solid #facc15;
+  border-radius: 20px;
+  background: transparent;
+  color: #facc15;
+  font-weight: 800;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background: #facc15;
+  color: #1c1308;
 }
 </style>
