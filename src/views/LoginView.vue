@@ -56,6 +56,8 @@
             </div>
 
             <button class="submit-button" type="submit">Sign Up</button>
+
+            <p v-if="message" class="message">{{ message }}</p>
           </form>
         </div>
 
@@ -81,6 +83,9 @@
             </div>
 
             <button class="submit-button" type="submit">Sign In</button>
+
+            <p v-if="message" class="message">{{ message }}</p>
+
           </form>
         </div>
 
@@ -204,6 +209,12 @@ async function handleLogin() {
       password: loginPassword.value
     })
   })
+
+  if (response.status === 400) {
+    showWrongPasswordAnimation()
+    message.value = 'Bitte Username/E-Mail und Passwort eingeben.'
+    return
+  }
 
   if (response.status === 404) {
     showWrongPasswordAnimation()
@@ -766,4 +777,12 @@ input:focus {
     margin: 0 auto;
   }
 }
+
+.message {
+  color: #8b0000;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 12px;
+}
+
 </style>
