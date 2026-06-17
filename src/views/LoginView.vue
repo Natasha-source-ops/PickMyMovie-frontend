@@ -205,9 +205,21 @@ async function handleLogin() {
     })
   })
 
+  if (response.status === 404) {
+    showWrongPasswordAnimation()
+    message.value = 'User does not exist.'
+    return
+  }
+
+  if (response.status === 401) {
+    showWrongPasswordAnimation()
+    message.value = 'Email-Adresse/Username oder Passwort ist falsch.'
+    return
+  }
+
   if (!response.ok) {
     showWrongPasswordAnimation()
-    message.value = 'Login failed.'
+    message.value = 'Login failed. Please try again.'
     return
   }
 
@@ -215,7 +227,7 @@ async function handleLogin() {
 
   if (!user || !user.id) {
     showWrongPasswordAnimation()
-    message.value = 'Username or password is incorrect.'
+    message.value = 'Login failed. Please try again.'
     return
   }
 
