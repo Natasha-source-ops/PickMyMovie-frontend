@@ -24,18 +24,30 @@ function toggleMovie(movieId: number) {
 }
 
 async function addToWatchlist(movie: Movie) {
-  await fetch(`${apiBaseUrl}/watchlist`, {
+  const userId = localStorage.getItem('currentUserId')
+
+  if (!userId) {
+    alert('Please log in first.')
+    return
+  }
+
+  const response = await fetch(`${apiBaseUrl}/watchlist`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      userId: 1,
+      userId: Number(userId),
       movieId: movie.id,
       movieTitle: movie.title,
       posterUrl: movie.imageUrl
     })
   })
+
+  if (!response.ok) {
+    alert('Could not add movie to watchlist.')
+    return
+  }
 
   alert(`${movie.title} added to watchlist`)
 }

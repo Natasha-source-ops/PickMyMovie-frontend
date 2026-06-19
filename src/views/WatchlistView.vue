@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 
 interface WatchlistEntry {
   id: number
@@ -12,21 +13,45 @@ interface WatchlistEntry {
 
 const watchlist = ref<WatchlistEntry[]>([])
 const isLoading = ref(true)
+const errorMessage = ref('')
 
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ||
   'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 async function loadWatchlist() {
-  const response = await fetch(`${apiBaseUrl}/watchlist/1`)
-  watchlist.value = await response.json()
-  isLoading.value = false
+  const userId = localStorage.getItem('currentUserId')
+
+  if (!userId) {
+    errorMessage.value = 'Please log in to view your watchlist.'
+    isLoading.value = false
+    return
+  }
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/watchlist/${userId}`)
+
+    if (!response.ok) {
+      throw new Error('Watchlist could not be loaded.')
+    }
+
+    watchlist.value = await response.json()
+  } catch (error) {
+    errorMessage.value = 'Watchlist could not be loaded. Please try again later.'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 async function removeFromWatchlist(id: number) {
-  await fetch(`${apiBaseUrl}/watchlist/${id}`, {
+  const response = await fetch(`${apiBaseUrl}/watchlist/${id}`, {
     method: 'DELETE',
   })
+
+  if (!response.ok) {
+    alert('Could not remove movie from watchlist.')
+    return
+  }
 
   watchlist.value = watchlist.value.filter((entry) => entry.id !== id)
 }
@@ -42,7 +67,11 @@ onMounted(loadWatchlist)
 
     <p v-if="isLoading">Loading watchlist...</p>
 
-    <div v-else-if="watchlist.length === 0">
+    <div v-else-if="errorMessage" class="empty-message">
+      {{ errorMessage }}
+    </div>
+
+    <div v-else-if="watchlist.length === 0" class="empty-message">
       No movies in your watchlist yet.
     </div>
 
@@ -87,6 +116,11 @@ onMounted(loadWatchlist)
 h1 {
   font-size: 48px;
   margin: 32px 0;
+}
+
+.empty-message {
+  color: #facc15;
+  font-weight: 800;
 }
 
 .watchlist-grid {
