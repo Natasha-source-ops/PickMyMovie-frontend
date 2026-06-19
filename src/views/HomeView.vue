@@ -28,6 +28,10 @@
             Log out
           </button>
 
+          <button v-if="currentUser" class="danger-button" @click="deleteAccount">
+            Delete Account
+          </button>
+
           <RouterLink to="/watchlist" class="secondary-button">
             Watchlist
           </RouterLink>
@@ -68,6 +72,38 @@ function logout() {
   localStorage.removeItem('currentUser')
   localStorage.removeItem('currentUserId')
   currentUser.value = null
+}
+
+async function deleteAccount() {
+  const userId = localStorage.getItem('currentUserId')
+
+  if (!userId) {
+    alert('No user logged in.')
+    return
+  }
+
+  const confirmed = confirm(
+    'Are you sure you want to delete your account? This cannot be undone.'
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  const response = await fetch(`${apiBaseUrl}/users/${userId}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) {
+    alert('Could not delete account.')
+    return
+  }
+
+  localStorage.removeItem('currentUser')
+  localStorage.removeItem('currentUserId')
+  currentUser.value = null
+
+  alert('Account deleted.')
 }
 
 onMounted(async () => {
@@ -214,5 +250,22 @@ h1 {
   color: #facc15;
   font-weight: 800;
   margin-top: 20px;
+}
+
+.danger-button {
+  border-radius: 24px;
+  padding: 14px 26px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 15px;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+.danger-button:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
 }
 </style>
