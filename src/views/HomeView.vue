@@ -11,14 +11,22 @@
           Save movies to your watchlist and rate them later.
         </p>
 
+        <p v-if="currentUser" class="user-info">
+          Logged in as {{ currentUser.username }}
+        </p>
+
         <div class="button-row">
           <button class="primary-button" @click="scrollToMovies">
             Discover movies
           </button>
 
-          <RouterLink to="/login" class="secondary-button">
+          <RouterLink v-if="!currentUser" to="/login" class="secondary-button">
             Log in
           </RouterLink>
+
+          <button v-else class="secondary-button" @click="logout">
+            Log out
+          </button>
 
           <RouterLink to="/watchlist" class="secondary-button">
             Watchlist
@@ -46,6 +54,8 @@ const movies = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 
+const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
+
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ||
   'https://pickmymovie-backend-reem-natasha-4.onrender.com'
@@ -54,7 +64,15 @@ function scrollToMovies() {
   document.getElementById('movies')?.scrollIntoView({ behavior: 'smooth' })
 }
 
+function logout() {
+  localStorage.removeItem('currentUser')
+  localStorage.removeItem('currentUserId')
+  currentUser.value = null
+}
+
 onMounted(async () => {
+  currentUser.value = JSON.parse(localStorage.getItem('currentUser') || 'null')
+
   try {
     const response = await fetch(`${apiBaseUrl}/api/v1/movies`)
 
@@ -190,5 +208,11 @@ h1 {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.user-info {
+  color: #facc15;
+  font-weight: 800;
+  margin-top: 20px;
 }
 </style>
