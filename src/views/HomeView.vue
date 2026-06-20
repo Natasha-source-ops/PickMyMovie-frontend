@@ -11,6 +11,29 @@
           Save movies to your watchlist and rate them later.
         </p>
 
+        <div class="genre-filter">
+          <label for="genre">Genre:</label>
+
+          <select
+            id="genre"
+            v-model="selectedGenre"
+            @change="loadMovies"
+          >
+            <option value="">All Genres</option>
+            <option value="28">Action</option>
+            <option value="12">Adventure</option>
+            <option value="16">Animation</option>
+            <option value="35">Comedy</option>
+            <option value="80">Crime</option>
+            <option value="18">Drama</option>
+            <option value="14">Fantasy</option>
+            <option value="27">Horror</option>
+            <option value="10749">Romance</option>
+            <option value="878">Sci-Fi</option>
+            <option value="53">Thriller</option>
+          </select>
+        </div>
+
         <p v-if="currentUser" class="user-info">
           Logged in as {{ currentUser.username }}
         </p>
@@ -57,7 +80,7 @@ import MovieList from '@/components/MovieList.vue'
 const movies = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
-
+const selectedGenre = ref('')
 const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
 
 const apiBaseUrl =
@@ -106,11 +129,18 @@ async function deleteAccount() {
   alert('Account deleted.')
 }
 
-onMounted(async () => {
-  currentUser.value = JSON.parse(localStorage.getItem('currentUser') || 'null')
+async function loadMovies() {
+  isLoading.value = true
+  errorMessage.value = ''
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/v1/movies`)
+    const genreQuery = selectedGenre.value
+      ? `?genre=${selectedGenre.value}`
+      : ''
+
+    const response = await fetch(
+      `${apiBaseUrl}/api/v1/movies${genreQuery}`
+    )
 
     if (!response.ok) {
       throw new Error('Movies could not be loaded.')
@@ -132,6 +162,11 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+onMounted(async () => {
+  currentUser.value = JSON.parse(localStorage.getItem('currentUser') || 'null')
+  await loadMovies()
 })
 </script>
 
@@ -267,5 +302,20 @@ h1 {
   background: #ef4444;
   color: white;
   transform: translateY(-2px);
+}
+
+.genre-filter {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.genre-filter select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #facc15;
+  background: #111827;
+  color: white;
 }
 </style>
