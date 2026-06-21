@@ -94,6 +94,34 @@ onMounted(loadRatings)
       </div>
     </div>
   </div>
+
+  <div class="submit-rating">
+    <h3>Submit Your Rating</h3>
+    <form @submit.prevent="submitRating">
+      <label>
+        Score:
+        <select v-model.number="newScore">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+
+      <label>
+        Comment:
+        <textarea v-model="newComment" placeholder="Write your comment here..."></textarea>
+      </label>
+
+      <button type="submit" :disabled="newScore === 0">Submit Rating</button>
+
+      <p v-if="message" class="message">{{ message }}</p>
+    </form>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import MovieRating from '@/components/MovieRating.vue'
 
 interface WatchlistEntry {
   id: number
@@ -16,8 +17,7 @@ const isLoading = ref(true)
 const errorMessage = ref('')
 
 const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://pickmymovie-backend-reem-natasha-4.onrender.com'
+  import.meta.env.VITE_API_BASE_URL || 'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 async function loadWatchlist() {
   const userId = localStorage.getItem('currentUserId')
@@ -77,22 +77,16 @@ onMounted(loadWatchlist)
 
     <div v-else class="watchlist-grid">
       <div v-for="entry in watchlist" :key="entry.id" class="watchlist-card">
-        <img
-          v-if="entry.posterUrl"
-          :src="entry.posterUrl"
-          :alt="entry.movieTitle"
-          class="poster"
-        />
+        <img v-if="entry.posterUrl" :src="entry.posterUrl" :alt="entry.movieTitle" class="poster" />
 
         <div class="watchlist-content">
           <h3>{{ entry.movieTitle || 'Movie ID: ' + entry.movieId }}</h3>
           <p>User ID: {{ entry.userId }}</p>
           <p>Added: {{ entry.addedDate }}</p>
 
-          <button class="remove-button" @click="removeFromWatchlist(entry.id)">
-            Remove
-          </button>
+          <button class="remove-button" @click="removeFromWatchlist(entry.id)">Remove</button>
         </div>
+        <MovieRating :movie-id="entry.movieId" />
       </div>
     </div>
   </main>
