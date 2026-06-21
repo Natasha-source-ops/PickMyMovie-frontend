@@ -101,7 +101,15 @@ onMounted(loadWatchlist)
             </button>
           </div>
 
-          <MovieRating v-if="openRatingId === entry.movieId" :movie-id="entry.movieId" />
+          <MovieRating
+            v-if="openRatingId === entry.movieId"
+            :movie-id="entry.movieId"
+            :show-form="true"
+          />
+        </div>
+
+        <div class="ratings-panel">
+          <MovieRating :movie-id="entry.movieId" :show-form="false" />
         </div>
       </div>
     </div>
@@ -141,7 +149,7 @@ h1 {
 .watchlist-card {
   display: flex;
   gap: 20px;
-  align-items: center;
+  align-items: flex-start;
   background: #111827;
   border: 1px solid rgba(250, 204, 21, 0.3);
   border-radius: 16px;
@@ -201,4 +209,11 @@ p {
   background: #e0a93b;
   border-color: #e0a93b;
 }
+  .ratings-panel {
+    border-left: 1px solid rgba(250, 204, 21, 0.15);
+    padding-left: 20px;
+    min-width: 220px;
+    max-width: 280px;
+  }
+
 </style>
