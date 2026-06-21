@@ -15,6 +15,7 @@ interface WatchlistEntry {
 const watchlist = ref<WatchlistEntry[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
+const openRatingId = ref<number | null>(null)
 
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL || 'https://pickmymovie-backend-reem-natasha-4.onrender.com'
@@ -55,6 +56,9 @@ async function removeFromWatchlist(id: number) {
 
   watchlist.value = watchlist.value.filter((entry) => entry.id !== id)
 }
+function toggleRating(movieId: number) {
+  openRatingId.value = openRatingId.value === movieId ? null : movieId
+}
 
 onMounted(loadWatchlist)
 </script>
@@ -84,9 +88,21 @@ onMounted(loadWatchlist)
           <p>User ID: {{ entry.userId }}</p>
           <p>Added: {{ entry.addedDate }}</p>
 
-          <button class="remove-button" @click="removeFromWatchlist(entry.id)">Remove</button>
+          <div style="display: flex; gap: 10px; margin-top: 10px">
+            <button
+              class="remove-button"
+              style="margin-top: 0"
+              @click="removeFromWatchlist(entry.id)"
+            >
+              Remove
+            </button>
+            <button class="rate-button" @click="toggleRating(entry.movieId)">
+              {{ openRatingId === entry.movieId ? 'Close' : '⭐ Rate' }}
+            </button>
+          </div>
+
+          <MovieRating v-if="openRatingId === entry.movieId" :movie-id="entry.movieId" />
         </div>
-        <MovieRating :movie-id="entry.movieId" />
       </div>
     </div>
   </main>
@@ -169,5 +185,20 @@ p {
 .remove-button:hover {
   background: #facc15;
   color: #1c1308;
+}
+
+.rate-button {
+  border: 1px solid #facc15;
+  border-radius: 20px;
+  background: #facc15;
+  color: #1c1308;
+  font-weight: 800;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.rate-button:hover {
+  background: #e0a93b;
+  border-color: #e0a93b;
 }
 </style>
