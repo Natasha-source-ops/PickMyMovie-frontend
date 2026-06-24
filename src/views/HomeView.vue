@@ -11,27 +11,41 @@
           Save movies to your watchlist and rate them later.
         </p>
 
-        <div class="genre-filter">
-          <label for="genre">Genre:</label>
+        <div class="filter-bar">
+          <div class="search-filter">
+            <label for="movie-search">Search:</label>
 
-          <select
-            id="genre"
-            v-model="selectedGenre"
-            @change="loadMovies"
-          >
-            <option value="">All Genres</option>
-            <option value="28">Action</option>
-            <option value="12">Adventure</option>
-            <option value="16">Animation</option>
-            <option value="35">Comedy</option>
-            <option value="80">Crime</option>
-            <option value="18">Drama</option>
-            <option value="14">Fantasy</option>
-            <option value="27">Horror</option>
-            <option value="10749">Romance</option>
-            <option value="878">Sci-Fi</option>
-            <option value="53">Thriller</option>
-          </select>
+            <input
+              id="movie-search"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search movies..."
+              @keyup.enter="loadMovies"
+            />
+          </div>
+
+          <div class="genre-filter">
+            <label for="genre">Genre:</label>
+
+            <select id="genre" v-model="selectedGenre" @change="loadMovies">
+              <option value="">All Genres</option>
+              <option value="28">Action</option>
+              <option value="12">Adventure</option>
+              <option value="16">Animation</option>
+              <option value="35">Comedy</option>
+              <option value="80">Crime</option>
+              <option value="18">Drama</option>
+              <option value="14">Fantasy</option>
+              <option value="27">Horror</option>
+              <option value="10749">Romance</option>
+              <option value="878">Sci-Fi</option>
+              <option value="53">Thriller</option>
+            </select>
+          </div>
+
+          <button class="filter-button" @click="loadMovies">
+            Search
+          </button>
         </div>
 
         <p v-if="currentUser" class="user-info">
@@ -81,6 +95,7 @@ const movies = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const selectedGenre = ref('')
+const searchQuery = ref('')
 const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
 
 const apiBaseUrl =
@@ -134,13 +149,22 @@ async function loadMovies() {
   errorMessage.value = ''
 
   try {
-    const genreQuery = selectedGenre.value
-      ? `?genre=${selectedGenre.value}`
-      : ''
+    const params = new URLSearchParams()
 
-    const response = await fetch(
-      `${apiBaseUrl}/api/v1/movies${genreQuery}`
-    )
+    if (selectedGenre.value) {
+      params.append('genre', selectedGenre.value)
+    }
+
+    if (searchQuery.value.trim()) {
+      params.append('query', searchQuery.value.trim())
+    }
+
+    const queryString = params.toString()
+    const requestUrl = queryString
+      ? `${apiBaseUrl}/api/v1/movies?${queryString}`
+      : `${apiBaseUrl}/api/v1/movies`
+
+    const response = await fetch(requestUrl)
 
     if (!response.ok) {
       throw new Error('Movies could not be loaded.')
@@ -211,10 +235,57 @@ h1 {
   line-height: 1.6;
 }
 
+.filter-bar {
+  margin-top: 24px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.search-filter,
+.genre-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-filter label,
+.genre-filter label {
+  color: #facc15;
+  font-weight: 800;
+}
+
+.search-filter input,
+.genre-filter select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #facc15;
+  background: #111827;
+  color: white;
+  min-width: 190px;
+}
+
+.filter-button {
+  border: none;
+  border-radius: 22px;
+  padding: 11px 22px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #facc15;
+  color: #1c1308;
+}
+
+.filter-button:hover {
+  background: #e0a93b;
+  transform: translateY(-2px);
+}
+
 .button-row {
   display: flex;
   gap: 16px;
   margin-top: 32px;
+  flex-wrap: wrap;
 }
 
 .primary-button,
@@ -266,21 +337,6 @@ h1 {
   color: #facc15;
 }
 
-@media (max-width: 800px) {
-  .hero-section {
-    padding: 24px;
-  }
-
-  h1 {
-    font-size: 42px;
-  }
-
-  .button-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
 .user-info {
   color: #facc15;
   font-weight: 800;
@@ -304,18 +360,28 @@ h1 {
   transform: translateY(-2px);
 }
 
-.genre-filter {
-  margin-top: 24px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
+@media (max-width: 800px) {
+  .hero-section {
+    padding: 24px;
+  }
 
-.genre-filter select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #facc15;
-  background: #111827;
-  color: white;
+  h1 {
+    font-size: 42px;
+  }
+
+  .button-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-bar {
+    align-items: stretch;
+  }
+
+  .search-filter input,
+  .genre-filter select,
+  .filter-button {
+    width: 100%;
+  }
 }
 </style>
