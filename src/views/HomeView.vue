@@ -80,6 +80,19 @@
           </select>
         </div>
 
+        <div class="filter-field">
+          <label for="provider">Platform</label>
+
+          <select id="provider" v-model="selectedProvider" @change="loadMovies">
+            <option value="">All Platforms</option>
+            <option value="8">Netflix</option>
+            <option value="119">Prime Video</option>
+            <option value="337">Disney+</option>
+            <option value="350">Apple TV+</option>
+            <option value="531">Paramount+</option>
+          </select>
+        </div>
+
         <button class="filter-button" @click="loadMovies">
           Search
         </button>
@@ -103,6 +116,7 @@ const movies = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const selectedGenre = ref('')
+const selectedProvider = ref('')
 const searchQuery = ref('')
 const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
 
@@ -161,6 +175,10 @@ async function loadMovies() {
 
     if (selectedGenre.value) {
       params.append('genre', selectedGenre.value)
+    }
+
+    if (selectedProvider.value) {
+      params.append('provider', selectedProvider.value)
     }
 
     if (searchQuery.value.trim()) {
