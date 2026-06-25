@@ -1,5 +1,28 @@
 <template>
   <main class="app">
+    <nav class="navbar">
+      <RouterLink to="/" class="nav-logo">PickMyMovie</RouterLink>
+
+      <div class="nav-links">
+        <a href="#movies">Movies</a>
+        <RouterLink to="/watchlist">Watchlist</RouterLink>
+      </div>
+
+      <div class="nav-actions">
+        <span v-if="currentUser" class="nav-user">
+          {{ currentUser.username }}
+        </span>
+
+        <RouterLink v-if="!currentUser" to="/login" class="nav-button">
+          Log in
+        </RouterLink>
+
+        <button v-else class="nav-button" @click="logout">
+          Log out
+        </button>
+      </div>
+    </nav>
+
     <section class="hero-section">
       <div class="hero-text">
         <p class="tagline">PickMyMovie</p>
@@ -11,76 +34,61 @@
           Save movies to your watchlist and rate them later.
         </p>
 
-        <div class="filter-bar">
-          <div class="search-filter">
-            <label for="movie-search">Search:</label>
-
-            <input
-              id="movie-search"
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search movies..."
-              @keyup.enter="loadMovies"
-            />
-          </div>
-
-          <div class="genre-filter">
-            <label for="genre">Genre:</label>
-
-            <select id="genre" v-model="selectedGenre" @change="loadMovies">
-              <option value="">All Genres</option>
-              <option value="28">Action</option>
-              <option value="12">Adventure</option>
-              <option value="16">Animation</option>
-              <option value="35">Comedy</option>
-              <option value="80">Crime</option>
-              <option value="18">Drama</option>
-              <option value="14">Fantasy</option>
-              <option value="27">Horror</option>
-              <option value="10749">Romance</option>
-              <option value="878">Sci-Fi</option>
-              <option value="53">Thriller</option>
-            </select>
-          </div>
-
-          <button class="filter-button" @click="loadMovies">
-            Search
-          </button>
-        </div>
-
-        <p v-if="currentUser" class="user-info">
-          Logged in as {{ currentUser.username }}
-        </p>
-
-        <div class="button-row">
-          <button class="primary-button" @click="scrollToMovies">
-            Discover movies
-          </button>
-
-          <RouterLink v-if="!currentUser" to="/login" class="secondary-button">
-            Log in
-          </RouterLink>
-
-          <button v-else class="secondary-button" @click="logout">
-            Log out
-          </button>
-
-          <button v-if="currentUser" class="danger-button" @click="deleteAccount">
-            Delete Account
-          </button>
-
-          <RouterLink to="/watchlist" class="secondary-button">
-            Watchlist
-          </RouterLink>
-        </div>
+        <button class="primary-button" @click="scrollToMovies">
+          Discover movies
+        </button>
       </div>
     </section>
 
     <section id="movies" class="movies-section">
-      <h2>Movie Recommendations</h2>
+      <div class="section-header">
+        <div>
+          <p class="section-tagline">Recommendations</p>
+          <h2>Movie Recommendations</h2>
+        </div>
+      </div>
+
+      <div class="filter-panel" aria-label="Movie search and filters">
+        <div class="filter-field search-field">
+          <label for="movie-search">Search</label>
+
+          <input
+            id="movie-search"
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search movies..."
+            @keyup.enter="loadMovies"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="genre">Genre</label>
+
+          <select id="genre" v-model="selectedGenre" @change="loadMovies">
+            <option value="">All Genres</option>
+            <option value="28">Action</option>
+            <option value="12">Adventure</option>
+            <option value="16">Animation</option>
+            <option value="35">Comedy</option>
+            <option value="80">Crime</option>
+            <option value="18">Drama</option>
+            <option value="14">Fantasy</option>
+            <option value="27">Horror</option>
+            <option value="10749">Romance</option>
+            <option value="878">Sci-Fi</option>
+            <option value="53">Thriller</option>
+          </select>
+        </div>
+
+        <button class="filter-button" @click="loadMovies">
+          Search
+        </button>
+      </div>
 
       <p v-if="isLoading">Loading movies...</p>
-      <p v-else-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <p v-else-if="errorMessage" class="error-message" role="alert">
+        {{ errorMessage }}
+      </p>
       <MovieList v-else :movies="movies" />
     </section>
   </main>
@@ -202,8 +210,70 @@ onMounted(async () => {
   font-family: Inter, sans-serif;
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 48px;
+  background: rgba(5, 5, 5, 0.92);
+  border-bottom: 1px solid rgba(250, 204, 21, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.nav-logo {
+  color: #facc15;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.nav-links,
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-links a,
+.nav-links :deep(a) {
+  color: #d1d5db;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.nav-links a:hover,
+.nav-links :deep(a:hover) {
+  color: #facc15;
+}
+
+.nav-user {
+  color: #facc15;
+  font-weight: 800;
+}
+
+.nav-button {
+  border: 1px solid #facc15;
+  border-radius: 20px;
+  background: transparent;
+  color: #facc15;
+  padding: 9px 16px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background: #facc15;
+  color: #1c1308;
+}
+
 .hero-section {
-  min-height: 85vh;
+  min-height: 78vh;
   padding: 48px;
   display: flex;
   align-items: center;
@@ -215,7 +285,8 @@ onMounted(async () => {
   max-width: 720px;
 }
 
-.tagline {
+.tagline,
+.section-tagline {
   color: #facc15;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -235,35 +306,85 @@ h1 {
   line-height: 1.6;
 }
 
-.filter-bar {
-  margin-top: 24px;
+.primary-button {
+  margin-top: 32px;
+  border-radius: 24px;
+  padding: 14px 26px;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 15px;
+  border: none;
+  background: #facc15;
+  color: #1c1308;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  background: #e0a93b;
+}
+
+.movies-section {
+  padding: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.movies-section h2 {
+  font-size: 34px;
+  margin: 4px 0 0;
+  color: #f8f1e7;
+}
+
+.filter-panel {
+  margin-bottom: 28px;
+  padding: 18px;
   display: flex;
   gap: 14px;
   align-items: flex-end;
   flex-wrap: wrap;
+  background: #111827;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: 18px;
 }
 
-.search-filter,
-.genre-filter {
+.filter-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.search-filter label,
-.genre-filter label {
+.search-field {
+  flex: 1;
+  min-width: 240px;
+}
+
+.filter-field label {
   color: #facc15;
   font-weight: 800;
 }
 
-.search-filter input,
-.genre-filter select {
+.filter-field input,
+.filter-field select {
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid #facc15;
-  background: #111827;
+  background: #050505;
   color: white;
   min-width: 190px;
+}
+
+.search-field input {
+  width: 100%;
 }
 
 .filter-button {
@@ -281,87 +402,24 @@ h1 {
   transform: translateY(-2px);
 }
 
-.button-row {
-  display: flex;
-  gap: 16px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-}
-
-.primary-button,
-.secondary-button {
-  border-radius: 24px;
-  padding: 14px 26px;
-  font-weight: 800;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 15px;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-}
-
-.primary-button {
-  border: none;
-  background: #facc15;
-  color: #1c1308;
-}
-
-.secondary-button {
-  background: transparent;
-  color: #facc15;
-  border: 1px solid #facc15;
-}
-
-.primary-button:hover,
-.secondary-button:hover {
-  transform: translateY(-2px);
-}
-
-.secondary-button:hover {
-  background: #facc15;
-  color: #1c1308;
-}
-
-.movies-section {
-  padding: 48px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.movies-section h2 {
-  font-size: 34px;
-  margin-bottom: 24px;
-  color: #f8f1e7;
-}
-
 .error-message {
   color: #facc15;
 }
 
-.user-info {
-  color: #facc15;
-  font-weight: 800;
-  margin-top: 20px;
-}
-
-.danger-button {
-  border-radius: 24px;
-  padding: 14px 26px;
-  font-weight: 800;
-  cursor: pointer;
-  font-size: 15px;
-  background: transparent;
-  color: #ef4444;
-  border: 1px solid #ef4444;
-}
-
-.danger-button:hover {
-  background: #ef4444;
-  color: white;
-  transform: translateY(-2px);
-}
-
 @media (max-width: 800px) {
+  .navbar {
+    padding: 16px 24px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nav-links,
+  .nav-actions {
+    flex-wrap: wrap;
+  }
+
   .hero-section {
+    min-height: 65vh;
     padding: 24px;
   }
 
@@ -369,17 +427,17 @@ h1 {
     font-size: 42px;
   }
 
-  .button-row {
-    flex-direction: column;
-    align-items: flex-start;
+  .movies-section {
+    padding: 24px;
   }
 
-  .filter-bar {
+  .filter-panel {
     align-items: stretch;
   }
 
-  .search-filter input,
-  .genre-filter select,
+  .filter-field,
+  .filter-field input,
+  .filter-field select,
   .filter-button {
     width: 100%;
   }
