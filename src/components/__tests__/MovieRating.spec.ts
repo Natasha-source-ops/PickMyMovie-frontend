@@ -7,6 +7,9 @@ const fakeRatings = [
   { id: 2, userId: 99, movieId: 1, score: 5, comment: 'Masterpiece.' },
 ]
 
+//tEST 1
+
+describe('MovieRating.vue', () => {
 
 it('should render the items from the backend', async () => {
 global.fetch = vi.fn().mockResolvedValue({
@@ -18,4 +21,22 @@ global.fetch = vi.fn().mockResolvedValue({
   })
   await flushPromises()
   expect(wrapper.text()).toContain('Really loved it!')
+})
+//TEST3
+
+it('should render message when no ratings received', async () => {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => [],
+  } as Response)
+
+  const wrapper = mount(MovieRating, {
+    props: { movieId: 1, showForm: false },
+  })
+
+  await flushPromises()
+
+  expect(wrapper.text()).toContain('No ratings yet.')
+})
+
 })
