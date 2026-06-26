@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 
 interface Movie {
   id: number
@@ -9,11 +10,12 @@ interface Movie {
   imageUrl: string
 }
 
-defineProps<{
+const props = defineProps<{
   movies: Movie[]
 }>()
 
 const selectedMovieId = ref<number | null>(null)
+const averageRatings = ref<Record<number, number>>({})
 
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ||
@@ -51,6 +53,34 @@ async function addToWatchlist(movie: Movie) {
 
   alert(`${movie.title} added to watchlist`)
 }
+
+async function loadAverageRatings() {
+  averageRatings.value = {}
+
+  const movieIds = props.movies.map((movie) => movie.id)
+
+  if (movieIds.length === 0) {
+    return
+  }
+
+  const response = await fetch(
+    `${apiBaseUrl}/api/v1/ratings/averages?movieIds=${movieIds.join(',')}`
+  )
+
+  if (!response.ok) {
+    return
+  }
+
+  averageRatings.value = await response.json()
+}
+
+watch(
+  () => props.movies,
+  () => {
+    loadAverageRatings()
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -67,11 +97,30 @@ async function addToWatchlist(movie: Movie) {
       <div class="movie-content">
         <h3>{{ movie.title }}</h3>
         <p class="release-date">{{ movie.releaseDate }}</p>
+
+        <p class="average-rating">
+          Average Rating:
+          <span v-if="averageRatings[movie.id]">
+            {{ averageRatings[movie.id].toFixed(1) }}/5 ⭐
+          </span>
+          <span v-else>No ratings yet</span>
+        </p>
+
         <p class="description">{{ movie.description }}</p>
 
-        <button class="watchlist-button" @click.stop="addToWatchlist(movie)">
-          Add to Watchlist
-        </button>
+        <div class="movie-actions">
+          <button class="watchlist-button" @click.stop="addToWatchlist(movie)">
+            Add to Watchlist
+          </button>
+
+          <RouterLink
+            class="reviews-button"
+            :to="`/reviews/${movie.id}`"
+            @click.stop
+          >
+            Reviews
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>
@@ -146,24 +195,52 @@ h3 {
   margin: 0 0 10px;
 }
 
+.average-rating {
+  color: #facc15;
+  font-weight: 800;
+  margin: 0 0 10px;
+}
+
 .description {
   color: #d1d5db;
   margin: 0;
   line-height: 1.5;
 }
 
-.watchlist-button {
+.movie-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
   margin-top: 14px;
-  border: none;
+}
+
+.watchlist-button,
+.reviews-button {
   border-radius: 20px;
-  background: #facc15;
-  color: #1c1308;
   font-weight: 800;
   padding: 10px 16px;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.watchlist-button {
+  border: none;
+  background: #facc15;
+  color: #1c1308;
+}
+
+.reviews-button {
+  border: 1px solid #facc15;
+  background: transparent;
+  color: #facc15;
 }
 
 .watchlist-button:hover {
   background: #e0a93b;
+}
+
+.reviews-button:hover {
+  background: #facc15;
+  color: #1c1308;
 }
 </style>
