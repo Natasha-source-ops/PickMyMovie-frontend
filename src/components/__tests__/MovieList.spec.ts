@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import MovieList from '@/components/MovieList.vue'
 
 const fakeMovies = [
@@ -21,7 +21,7 @@ const fakeMovies = [
 //TEST 2
 describe('MovieList.vue', () => {
   it('renders the movie title', () => {
-    const wrapper = mount(MovieList, {
+    const wrapper = shallowMount(MovieList, {
       props: { movies: fakeMovies },
     })
     const title = wrapper.find('h3')
@@ -29,7 +29,7 @@ describe('MovieList.vue', () => {
   })
 // TEST 4
   it('renders the correct number of movie cards', () => {
-    const wrapper = mount(MovieList, {
+    const wrapper = shallowMount(MovieList, {
       props: { movies: fakeMovies },
     })
     const cards = wrapper.findAll('.movie-card')

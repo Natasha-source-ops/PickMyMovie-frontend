@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import MovieRating from '@/components/MovieRating.vue'
 
 const fakeRatings = [
@@ -16,7 +16,7 @@ global.fetch = vi.fn().mockResolvedValue({
   ok: true,
   json: async () => fakeRatings,
   } as Response)
-  const wrapper = mount(MovieRating, {
+  const wrapper = shallowMount(MovieRating, {
     props: { movieId: 1, showForm: false }
   })
   await flushPromises()
@@ -30,7 +30,7 @@ it('should render message when no ratings received', async () => {
     json: async () => [],
   } as Response)
 
-  const wrapper = mount(MovieRating, {
+  const wrapper = shallowMount(MovieRating, {
     props: { movieId: 1, showForm: false },
   })
 
