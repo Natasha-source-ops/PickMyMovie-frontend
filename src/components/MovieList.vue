@@ -100,10 +100,10 @@ watch(
 
         <p class="average-rating">
           Average Rating:
-          <span v-if="averageRatings[movie.id] !== undefined && averageRatings[movie.id] > 0">
-            {{ (averageRatings[movie.id] ?? 0).toFixed(1) }}/5 ⭐
-          </span>
-          <span v-else>No ratings yet</span>
+          {{ ((averageRatings[movie.id] ?? 0) > 0)
+            ? `${(averageRatings[movie.id] ?? 0).toFixed(1)}/5 ⭐`
+            : 'No ratings yet'
+          }}
         </p>
 
         <p class="description">{{ movie.description }}</p>
