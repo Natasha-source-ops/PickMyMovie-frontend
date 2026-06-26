@@ -93,6 +93,19 @@
           </select>
         </div>
 
+        <div class="filter-field">
+          <label for="region">Region</label>
+
+          <select id="region" v-model="selectedRegion" @change="loadMovies">
+            <option value="DE">Germany</option>
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="SA">Saudi Arabia</option>
+            <option value="FR">France</option>
+            <option value="TR">Turkey</option>
+          </select>
+        </div>
+
         <button class="filter-button" @click="loadMovies">
           Search
         </button>
@@ -117,6 +130,7 @@ const isLoading = ref(true)
 const errorMessage = ref('')
 const selectedGenre = ref('')
 const selectedProvider = ref('')
+const selectedRegion = ref('DE')
 const searchQuery = ref('')
 const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
 
@@ -179,6 +193,7 @@ async function loadMovies() {
 
     if (selectedProvider.value) {
       params.append('provider', selectedProvider.value)
+      params.append('region', selectedRegion.value)
     }
 
     if (searchQuery.value.trim()) {
