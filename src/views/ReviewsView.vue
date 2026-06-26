@@ -5,6 +5,7 @@ import { useRoute, RouterLink } from 'vue-router'
 interface Rating {
   id: number
   userId: number
+  username: string
   movieId: number
   score: number
   comment: string
