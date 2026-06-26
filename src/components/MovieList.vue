@@ -121,6 +121,9 @@ watch(
             Reviews
           </RouterLink>
         </div>
+            Reviews
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>
