@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import MovieRating from '@/components/MovieRating.vue'
 
 interface WatchlistEntry {
   id: number
@@ -15,11 +14,11 @@ interface WatchlistEntry {
 const watchlist = ref<WatchlistEntry[]>([])
 const isLoading = ref(true)
 const errorMessage = ref('')
-const openRatingId = ref<number | null>(null)
 const viewMode = ref<'grid' | 'list'>('grid')
 
 const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL || 'https://pickmymovie-backend-reem-natasha-4.onrender.com'
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://pickmymovie-backend-reem-natasha-4.onrender.com'
 
 async function loadWatchlist() {
   const userId = localStorage.getItem('currentUserId')
@@ -56,10 +55,6 @@ async function removeFromWatchlist(id: number) {
   }
 
   watchlist.value = watchlist.value.filter((entry) => entry.id !== id)
-}
-
-function toggleRating(movieId: number) {
-  openRatingId.value = openRatingId.value === movieId ? null : movieId
 }
 
 onMounted(loadWatchlist)
@@ -102,53 +97,78 @@ onMounted(loadWatchlist)
       No movies in your watchlist yet.
     </div>
 
-    <div
-      v-else
-      :class="viewMode === 'grid' ? 'watchlist-grid' : 'watchlist-list'"
-    >
+    <section v-else-if="viewMode === 'grid'" class="watchlist-grid">
       <article
         v-for="entry in watchlist"
         :key="entry.id"
-        class="watchlist-card"
-        :class="{ compact: viewMode === 'list' }"
+        class="grid-card"
       >
         <img
           v-if="entry.posterUrl"
           :src="entry.posterUrl"
           :alt="entry.movieTitle"
-          class="poster"
+          class="grid-poster"
         />
 
-        <div class="watchlist-content">
+        <div class="grid-content">
           <h2>{{ entry.movieTitle || 'Movie ID: ' + entry.movieId }}</h2>
-          <p>User ID: {{ entry.userId }}</p>
-          <p>Added: {{ entry.addedDate }}</p>
+          <p class="added-date">Added: {{ entry.addedDate }}</p>
 
-          <div class="action-row">
+          <div class="grid-actions">
+            <RouterLink
+              class="reviews-button"
+              :to="`/reviews/${entry.movieId}`"
+            >
+              Reviews
+            </RouterLink>
+
             <button
               class="remove-button"
               @click="removeFromWatchlist(entry.id)"
             >
               Remove
             </button>
-
-            <button class="rate-button" @click="toggleRating(entry.movieId)">
-              {{ openRatingId === entry.movieId ? 'Close' : '⭐ Rate' }}
-            </button>
           </div>
-
-          <MovieRating
-            v-if="openRatingId === entry.movieId"
-            :movie-id="entry.movieId"
-            :show-form="true"
-          />
-        </div>
-
-        <div class="ratings-panel">
-          <MovieRating :movie-id="entry.movieId" :show-form="false" />
         </div>
       </article>
-    </div>
+    </section>
+
+    <section v-else class="watchlist-list">
+      <article
+        v-for="entry in watchlist"
+        :key="entry.id"
+        class="list-card"
+      >
+        <img
+          v-if="entry.posterUrl"
+          :src="entry.posterUrl"
+          :alt="entry.movieTitle"
+          class="list-poster"
+        />
+
+        <div class="list-content">
+          <h2>{{ entry.movieTitle || 'Movie ID: ' + entry.movieId }}</h2>
+          <p>User ID: {{ entry.userId }}</p>
+          <p>Added: {{ entry.addedDate }}</p>
+        </div>
+
+        <div class="list-actions">
+          <RouterLink
+            class="reviews-button"
+            :to="`/reviews/${entry.movieId}`"
+          >
+            Reviews
+          </RouterLink>
+
+          <button
+            class="remove-button"
+            @click="removeFromWatchlist(entry.id)"
+          >
+            Remove
+          </button>
+        </div>
+      </article>
+    </section>
   </main>
 </template>
 
@@ -219,75 +239,105 @@ h1 {
 
 .watchlist-grid {
   display: grid;
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.grid-card {
+  background: #111827;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.grid-card:hover {
+  transform: translateY(-4px);
+  border-color: #facc15;
+}
+
+.grid-poster {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+.grid-content {
+  padding: 16px;
+}
+
+.grid-content h2 {
+  color: #facc15;
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.added-date {
+  color: #d1d5db;
+  margin: 0 0 14px;
+}
+
+.grid-actions,
+.list-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .watchlist-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
-.watchlist-card {
+.list-card {
   display: grid;
-  grid-template-columns: 90px minmax(0, 1fr) 280px;
+  grid-template-columns: 90px minmax(0, 1fr) auto;
   gap: 20px;
-  align-items: flex-start;
+  align-items: center;
   background: #111827;
   border: 1px solid rgba(250, 204, 21, 0.3);
   border-radius: 16px;
   padding: 20px;
 }
 
-.watchlist-card.compact {
-  grid-template-columns: 60px minmax(0, 1fr) 220px;
-  padding: 14px;
-}
-
-.poster {
+.list-poster {
   width: 90px;
   height: 135px;
   object-fit: cover;
   border-radius: 12px;
 }
 
-.watchlist-card.compact .poster {
-  width: 60px;
-  height: 90px;
-}
-
-.watchlist-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-h2 {
+.list-content h2 {
   color: #facc15;
   margin: 0 0 8px;
-  font-size: 22px;
+  font-size: 24px;
 }
 
-p {
+.list-content p {
   margin: 0 0 6px;
 }
 
-.action-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-
-.remove-button {
-  width: fit-content;
-  border: 1px solid #facc15;
+.remove-button,
+.reviews-button {
   border-radius: 20px;
-  background: transparent;
-  color: #facc15;
   font-weight: 800;
   padding: 10px 16px;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.remove-button {
+  border: 1px solid #facc15;
+  background: transparent;
+  color: #facc15;
+}
+
+.reviews-button {
+  border: none;
+  background: #facc15;
+  color: #1c1308;
 }
 
 .remove-button:hover {
@@ -295,49 +345,26 @@ p {
   color: #1c1308;
 }
 
-.rate-button {
-  border: 1px solid #facc15;
-  border-radius: 20px;
-  background: #facc15;
-  color: #1c1308;
-  font-weight: 800;
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-.rate-button:hover {
+.reviews-button:hover {
   background: #e0a93b;
-  border-color: #e0a93b;
-}
-
-.ratings-panel {
-  border-left: 1px solid rgba(250, 204, 21, 0.15);
-  padding-left: 20px;
-  min-width: 220px;
-  max-width: 280px;
-}
-
-.watchlist-card.compact .ratings-panel {
-  max-width: 220px;
 }
 
 @media (max-width: 900px) {
+  .watchlist-page {
+    padding: 24px;
+  }
+
   .watchlist-header {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .watchlist-card,
-  .watchlist-card.compact {
+  .list-card {
     grid-template-columns: 1fr;
   }
 
-  .ratings-panel {
-    border-left: none;
-    border-top: 1px solid rgba(250, 204, 21, 0.15);
-    padding-left: 0;
-    padding-top: 16px;
-    max-width: none;
+  .list-actions {
+    justify-content: flex-start;
   }
 }
 </style>
