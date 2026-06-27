@@ -6,7 +6,7 @@
       <div class="nav-links">
         <a href="#movies">Movies</a>
         <RouterLink to="/watchlist">Watchlist</RouterLink>
-        <a href="#movies">Reviews</a>
+        <RouterLink to="/reviews">Reviews</RouterLink>
       </div>
 
       <div class="account-menu">
