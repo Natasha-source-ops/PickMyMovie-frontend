@@ -7,6 +7,8 @@ interface Rating {
   userId: number
   username: string
   movieId: number
+  movieTitle: string
+  posterUrl: string
   score: number
   comment: string
 }
@@ -74,8 +76,19 @@ onMounted(loadMyReviews)
 
     <section v-else class="reviews-list">
       <article v-for="rating in ratings" :key="rating.id" class="review-card">
-        <h2>Movie ID: {{ rating.movieId }}</h2>
-        <p class="score">{{ rating.score }}/5 ⭐</p>
+        <div class="review-movie-header">
+          <img
+            v-if="rating.posterUrl"
+            :src="rating.posterUrl"
+            :alt="rating.movieTitle"
+            class="review-poster"
+          />
+
+          <div>
+            <h2>{{ rating.movieTitle }}</h2>
+            <p class="score">{{ rating.score }}/5 ⭐</p>
+          </div>
+        </div>
         <p>{{ rating.comment || 'No comment.' }}</p>
 
         <div class="actions">
@@ -152,5 +165,19 @@ h2,
   background: transparent;
   color: #ef4444;
   border: 1px solid #ef4444;
+}
+
+.review-movie-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.review-poster {
+  width: 70px;
+  height: 105px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 </style>
