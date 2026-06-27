@@ -6,20 +6,29 @@
       <div class="nav-links">
         <a href="#movies">Movies</a>
         <RouterLink to="/watchlist">Watchlist</RouterLink>
+        <a href="#movies">Reviews</a>
       </div>
 
-      <div class="nav-actions">
-        <span v-if="currentUser" class="nav-user">
-          {{ currentUser.username }}
-        </span>
-
-        <RouterLink v-if="!currentUser" to="/login" class="nav-button">
-          Log in
-        </RouterLink>
-
-        <button v-else class="nav-button" @click="logout">
-          Log out
+      <div class="account-menu">
+        <button class="nav-button" @click="toggleAccountMenu">
+          {{ currentUser ? currentUser.username : 'Account' }} ▾
         </button>
+
+        <div v-if="isAccountMenuOpen" class="account-dropdown">
+          <template v-if="!currentUser">
+            <RouterLink to="/login" @click="isAccountMenuOpen = false">
+              Log in
+            </RouterLink>
+
+            <RouterLink to="/login" @click="isAccountMenuOpen = false">
+              Sign up
+            </RouterLink>
+          </template>
+
+          <button v-else @click="logout">
+            Log out
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -136,6 +145,7 @@ const selectedRegion = ref('DE')
 const regions = ref<Region[]>([])
 const searchQuery = ref('')
 const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
+const isAccountMenuOpen = ref(false)
 
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ||
@@ -149,6 +159,11 @@ function logout() {
   localStorage.removeItem('currentUser')
   localStorage.removeItem('currentUserId')
   currentUser.value = null
+  isAccountMenuOpen.value = false
+}
+
+function toggleAccountMenu() {
+  isAccountMenuOpen.value = !isAccountMenuOpen.value
 }
 
 async function loadMovies() {
@@ -432,6 +447,43 @@ h1 {
 .error-message {
   color: #facc15;
 }
+
+  .account-menu {
+    position: relative;
+  }
+
+  .account-dropdown {
+    position: absolute;
+    right: 0;
+    top: 48px;
+    min-width: 150px;
+    background: #111827;
+    border: 1px solid rgba(250, 204, 21, 0.3);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .account-dropdown a,
+  .account-dropdown button {
+    color: #facc15;
+    background: transparent;
+    border: none;
+    text-align: left;
+    text-decoration: none;
+    font-weight: 800;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+
+  .account-dropdown a:hover,
+  .account-dropdown button:hover {
+    background: #facc15;
+    color: #1c1308;
+    border-radius: 10px;
+  }
 
 @media (max-width: 800px) {
   .navbar {
