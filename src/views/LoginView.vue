@@ -3,7 +3,10 @@
     <RouterLink to="/" class="back-link">← Back</RouterLink>
 
     <section class="auth-card">
-      <img src="/pickmymovie-logo.png" alt="PickMyMovie Logo" class="auth-logo" />
+      <div class="brand">
+        <p class="brand-name">PickMyMovie</p>
+        <p class="brand-subtitle">Find your next favorite movie.</p>
+      </div>
 
       <form v-if="!isRegisterActive" @submit.prevent="handleLogin">
         <h1>Log In</h1>
@@ -230,11 +233,24 @@ function showWrongPasswordAnimation() {
   box-shadow: 0 30px 80px rgba(250, 204, 21, 0.14);
 }
 
-.auth-logo {
-  display: block;
-  width: 180px;
-  max-width: 70%;
-  margin: 0 auto 24px;
+.brand {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.brand-name {
+  color: #facc15;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.brand-subtitle {
+  color: #9ca3af;
+  margin: 8px 0 0;
+  font-size: 15px;
 }
 
 h1 {
@@ -265,6 +281,11 @@ input {
   padding: 14px 16px;
   border-radius: 14px;
   outline: none;
+}
+
+input:focus {
+  border-color: #e0a93b;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.18);
 }
 
 .password-field {
@@ -299,9 +320,15 @@ input {
   cursor: pointer;
 }
 
+.submit-button:hover,
+.show-button:hover {
+  background: #e0a93b;
+}
+
 .switch-text {
   color: #d1d5db;
   text-align: center;
+  margin: 4px 0 0;
 }
 
 .switch-text button {
@@ -310,6 +337,10 @@ input {
   color: #facc15;
   font-weight: 900;
   cursor: pointer;
+}
+
+.switch-text button:hover {
+  color: #e0a93b;
 }
 
 .message {
@@ -333,6 +364,10 @@ input {
     align-items: flex-start;
     padding-top: 24px;
     flex-direction: column;
+  }
+
+  .brand-name {
+    font-size: 23px;
   }
 }
 </style>
