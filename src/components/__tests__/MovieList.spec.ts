@@ -35,4 +35,23 @@ describe('MovieList.vue', () => {
     const cards = wrapper.findAll('.movie-card')
     expect(cards).toHaveLength(2)
   })
+
+  //TEST 5
+  it("renders the movie description", () => {
+    const wrapper = shallowMount (MovieList,
+      {props:{movies:fakeMovies},
+    })
+    const description =wrapper.find('.description')
+    expect(description.text()).toContain('A mind-bending thriller')
+  })
+
+  // TEST 6
+  it("renders the movie Image", () => {
+    const wrapper = shallowMount (MovieList,
+      {props:{movies:fakeMovies},
+    })
+    console.log(wrapper.html())
+    const image =wrapper.find('img')
+    expect(image).toBeTruthy()
+  })
 })
